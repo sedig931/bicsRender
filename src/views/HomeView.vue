@@ -65,7 +65,7 @@ import { getCurrentUser } from "../composable/modal.js";
 
 export default {
   name: "HomeView",
-  props: ["id"],
+  props: ["id", "verfNumber", "email"],
   data() {
     return {
       activeUser: {
@@ -76,7 +76,19 @@ export default {
   methods: {
     async getUserInfo() {
       try {
-        this.activeUser = await getCurrentUser(this.id);
+        if (this.id === "123123") {
+          const localCustomers1 = JSON.parse(
+            localStorage.getItem("localCustomers")
+          );
+          this.activeUser = localCustomers1.customers.find(
+            (customer) =>
+              String(customer.verfnumber) === this.verfNumber &&
+              customer.email === this.email
+          );
+        } else {
+          // console.log("go to dtabase");
+          this.activeUser = await getCurrentUser(this.id);
+        }
       } catch (err) {
         // backto login page..
         this.$router.push({
@@ -86,7 +98,7 @@ export default {
     },
     async logout() {
       try {
-        await fetch(`http://localhost:300/destroy`, {
+        await fetch(`https://bicsserver24.netlify.app/api/destroy`, {
           credentials: "include",
           method: "GET",
           headers: {

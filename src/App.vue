@@ -10,6 +10,10 @@
   text-align: center;
 } */
 :root {
+  --color-primary: #5ec576;
+  --color-primary-darker: #4bbb7d;
+  --color-tertiary: #ff585f;
+  --color-tertiary-darker: #fd424b;
   --gradient-logincontainer-primary: linear-gradient(
     to top left,
     #d1d1d1,

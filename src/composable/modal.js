@@ -1,14 +1,28 @@
+import axios from "axios";
+// http://localhost:300
+// https://bicsserver24.netlify.app/api
 export const addNewCustomer = async function (customer) {
   try {
-    await fetch(`http://localhost:300/addNewUser/newUser`, {
-      credentials: "include",
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      mode: "no-cors",
-      body: customer,
-    });
+    // usee this only when are in localhost
+    // let newcustomer = {};
+    // await fetch(`http://localhost:300/addNewUser/newUser`, {
+    //   credentials: "include",
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify(customer),
+    // }).then((res) => res.json()).then(data => newcustomer = data);
+    // return newcustomer;
+
+    if (localStorage.getItem("localCustomers")) {
+      const localCustomers1 = JSON.parse(localStorage.getItem("localCustomers"));
+      localCustomers1.customers.push(customer);
+      localStorage.setItem('localCustomers', JSON.stringify(localCustomers1))
+    } else {
+      localStorage.setItem('localCustomers', JSON.stringify({ customers: [customer] }))
+    }
+
   } catch (err) {
     throw err;
   }
@@ -30,7 +44,7 @@ export const addNewAdmin = async function (admin) {
 
 export const sendVerfNum = async function (receverInfo) {
   try {
-    await fetch(`http://localhost:300/addNewUser/sendVerfnumber`, {
+    await fetch(`https://bicsserver24.netlify.app/api/addNewUser/sendVerfnumber`, {
       credentials: "include",
       method: "POST",
       headers: {
@@ -45,8 +59,14 @@ export const sendVerfNum = async function (receverInfo) {
 
 export const getUserInfo = async function (email, verfnumber) {
   try {
-    let user = {};
-    await fetch(`http://localhost:300/addNewUser/getUser`, {
+    let user;
+    if (localStorage.getItem("localCustomers")) {
+      const localCustomers1 = JSON.parse(localStorage.getItem("localCustomers"));
+      user = localCustomers1.customers.find(customer => String(customer.verfnumber) === verfnumber && customer.email === email);
+      if (user) return user;
+    }
+    // console.log('from data base..');
+    await fetch(`https://bicsserver24.netlify.app/api/addNewUser/getUser`, {
       method: "POST",
       credentials: "include",
       headers: {
@@ -65,7 +85,7 @@ export const getUserInfo = async function (email, verfnumber) {
 export const getCurrentUser = async function (id) {
   try {
     let user = {};
-    await fetch(`http://localhost:300/currentUserInf/getInfo/${id}`, {
+    await fetch(`https://bicsserver24.netlify.app/api/currentUserInf/getInfo/${id}`, {
       credentials: "include",
       method: "GET",
       headers: {
@@ -83,7 +103,7 @@ export const getCurrentUser = async function (id) {
 export const getAllCustomers = async function () {
   try {
     let allcustomer;
-    await fetch(`http://localhost:300/currentUserInf/customersInf`, {
+    await fetch(`https://bicsserver24.netlify.app/api/currentUserInf/customersInf`, {
       credentials: "include",
       method: "GET",
       headers: {

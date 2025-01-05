@@ -1,11 +1,11 @@
 <template>
   <div class="container-div flex-column">
+    <!-- v-if="!this.showBar" -->
     <div
-      class="row-menu-icon flex-row text-muted"
-      v-if="!this.showBar"
+      class="row-menu-icon-div flex-row"
       @click="this.dropdownmenue = !this.dropdownmenue"
     >
-      <i class="bi bi-list"></i>
+      <i class="bi bi-list flex-row"></i>
       <div
         class="row-menue-div flex-column border text-center"
         v-if="this.dropdownmenue"
@@ -67,9 +67,9 @@
       </div>
       <!-- </div> -->
     </div>
-
+    <!-- v-if="this.showBar" -->
     <div class="admin-page-container flex-row" dir="rtl">
-      <div class="right-menue-div flex-column" v-if="this.showBar">
+      <div class="right-menue-div flex-column">
         <div
           class="btn-menue-div flex-row"
           data-windownum="0"
@@ -268,6 +268,14 @@ export default {
               new Date(customer.createdDate)
             ))
         );
+        if (localStorage.getItem("localCustomers")) {
+          const localCustomers1 = JSON.parse(
+            localStorage.getItem("localCustomers")
+          );
+          localCustomers1.customers.forEach((localCustomer) =>
+            this.customers.push(localCustomer)
+          );
+        }
         this.customersList = this.customers;
       } catch (err) {
         this.$router.push({
@@ -293,7 +301,7 @@ export default {
     },
     async logout() {
       try {
-        await fetch(`http://localhost:300/destroy`, {
+        await fetch(`https://bicsserver24.netlify.app/api/destroy`, {
           credentials: "include",
           method: "GET",
           headers: {
@@ -343,22 +351,31 @@ export default {
   /* background-color: white; */
 }
 /* ---------------------------------------------------------------ROW NAV---------------------------- */
-.row-menu-icon {
-  position: relative;
+.row-menu-icon-div {
+  position: fixed;
   top: 47px;
-  left: 35%;
-  height: 1px;
-  width: 25px;
-  font-size: 28px;
+  right: 10%;
+  height: 32px;
+  width: 32px;
+  font-size: 23px;
   font-family: "Noto Kufi Arabic", sans-serif;
   cursor: pointer;
-  background-image: var(--gradient-logincontainer-primary);
+  color: white;
+  /* border: 2px solid rgb(108, 108, 108); */
+  border-radius: 5px;
+  padding: 0;
+  display: none;
+  /* background-color: white; */
+  background-image: var(--gradient-right-cont-primary);
+
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 .row-menue-div {
   position: absolute;
-  top: 27px;
+  top: 35px;
   width: 80px;
   border-radius: 10px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 .small-menue-lbl {
   width: 100%;
@@ -387,9 +404,11 @@ export default {
   height: 100%;
   width: 400px;
   margin: 30px 30px 0 0;
-  background-color: rgb(46, 44, 44);
+  /* background-color: rgb(46, 44, 44); */
+  background-image: var(--gradient-right-cont-primary);
   border-radius: 20px 20px 0 0;
   font-size: 19px;
+  display: flex;
 }
 .btn-menue-div {
   height: 35px;
@@ -461,7 +480,7 @@ export default {
 .number-span {
   width: 30%;
   border: 1.5px solid rgb(33, 30, 209);
-  border-radius: 10px;
+  border-radius: 5px;
   padding-right: 15px;
 }
 .number-div {
@@ -485,7 +504,7 @@ export default {
   width: 30%;
   height: 25px;
   font-size: 13px;
-  border-radius: 15px;
+  border-radius: 8px;
   color: rgb(120, 120, 120);
   border: 1px solid rgb(180, 180, 180);
 }
@@ -511,7 +530,7 @@ export default {
 .name-span {
   width: 150px;
   border: 1px solid rgb(180, 180, 180);
-  border-radius: 15px;
+  border-radius: 8px;
 }
 .steps-bycnum-span {
   width: 150px;
@@ -525,7 +544,7 @@ export default {
 .tab-div {
   flex: 1;
   height: 25px;
-  border-radius: 15px;
+  border-radius: 8px;
   color: rgb(33, 30, 209);
   border: 1px solid rgb(33, 30, 209);
   cursor: pointer;
@@ -563,6 +582,22 @@ export default {
   .spans-div {
     width: 90%;
   }
+  .search-input {
+    width: 70%;
+  }
+}
+@media (max-width: 965px) {
+  .row-menu-icon-div {
+    display: flex;
+  }
+  .right-menue-div {
+    display: none;
+  }
+}
+@media (max-width: 700px) {
+  .name-span {
+    border-radius: 8px;
+  }
 }
 @media (max-width: 815px) {
   .right-spans-div {
@@ -584,8 +619,13 @@ export default {
     padding: 1%;
   }
 }
+@media (max-width: 450px) {
+  .tabs-container-div {
+    font-size: 7px;
+  }
+}
 /* --------------------------------Customer & Settings-------------------------------- */
-@media (max-width: 1015px) {
+@media (min-width: 450px) and (max-width: 1015px) {
   .tabs-container-div {
     font-size: 10px;
   }
@@ -597,12 +637,12 @@ export default {
 }
 @media (max-width: 990px) {
   .single-customer-div {
-    font-size: 10px;
+    font-size: 9px;
   }
 }
 @media (max-width: 636px) {
   .header-div {
-    font-size: 13px;
+    font-size: 10px;
   }
 }
 /* less than 572 hide row content */

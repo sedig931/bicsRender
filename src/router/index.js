@@ -5,7 +5,7 @@ import AdminView from "../views/adminView.vue";
 
 const routes = [
   {
-    path: "/:id",
+    path: "/:id/:verfNumber/:email",
     name: "home",
     component: HomeView,
     props: true,

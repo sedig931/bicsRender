@@ -1,5 +1,10 @@
 <template>
   <div class="parent-div flex-row">
+    <AppovlView
+      @showHideApprovalDiv="this.showApprovalDiv = !this.showApprovalDiv"
+      @okApproved="this.createNewUser"
+      v-if="this.showApprovalDiv"
+    />
     <div class="login-outer-container-div flex-row p-3" dir="rtl">
       <form
         class="login-form"
@@ -72,7 +77,7 @@
       <!-- ------------------------------gel all user info and -------------------------------------- -->
       <form
         class="regester-form text-muted m-3"
-        @submit.prevent="this.createNewUser"
+        @submit.prevent="this.showApprovalDiv = true"
         v-if="this.showFullRegesterInfo"
       >
         <div class="row p-0 m-0">
@@ -179,17 +184,20 @@ import {
   addNewAdmin,
   sendVerfNum,
 } from "../composable/modal.js";
+import AppovlView from "./approvalPopUp.vue";
 export default {
   name: "Login-View",
+  components: { AppovlView },
   data() {
     return {
       showLoginPage: true,
       showEmailVerf: false,
       showFullRegesterInfo: false,
+      showApprovalDiv: false,
       verfNumber: "",
       user: {
-        email: "",
-        verfnumber: "",
+        email: "fawzi@gmail.com",
+        verfnumber: "12458",
         contracts: [],
       },
       contract: { bycnumber: "" },
@@ -202,19 +210,39 @@ export default {
           this.user.email,
           String(this.user.verfnumber)
         );
-        if (activeUserID.admin) {
-          this.$router.push({
-            name: "admin",
-            params: { id: activeUserID._id },
-          });
-        } else {
-          this.$router.push({
-            name: "home",
-            params: { id: activeUserID._id },
-          });
+        if (activeUserID) {
+          if (activeUserID._id === "123123") {
+            this.$router.push({
+              name: "home",
+              params: {
+                id: activeUserID._id,
+                verfNumber: activeUserID.verfnumber,
+                email: activeUserID.email,
+              },
+            });
+          } else {
+            if (activeUserID.admin) {
+              this.$router.push({
+                name: "admin",
+                params: {
+                  id: activeUserID._id,
+                },
+              });
+            } else {
+              this.$router.push({
+                name: "home",
+                params: {
+                  id: activeUserID._id,
+                  verfNumber: 0.0,
+                  email: 0.0,
+                },
+              });
+            }
+          }
         }
         // await addNewAdmin({});
       } catch (err) {
+        console.log(err);
         console.log(err.message);
       }
     },
@@ -222,6 +250,10 @@ export default {
       this.showLoginPage = false;
       this.showEmailVerf = true;
     },
+    //nojod pass: 6666
+    //salma pass: 4169
+    //osama pass: 2412
+    //ali pass: 8792
     async sendVervNumber(e) {
       try {
         if (!this.verfNumber) {
@@ -230,6 +262,8 @@ export default {
             Math.random() * (9999 - 2000 + 1) + 2000
           );
           // verf numver less than 2000 it shoud be admin..
+          // console.log(this.verfNumber);
+
           await sendVerfNum({
             receverMail: this.user.email,
             verfNumber: String(this.verfNumber),
@@ -259,25 +293,13 @@ export default {
         this.contract.contractnumber = Math.floor(
           Math.random() * (999999 - 100000 + 1) + 100000
         );
-
         this.contract.modbuye = this.contract.bycnumber;
-        this.contract.docfile = document.querySelector(".input-file").files[0];
-
         this.user.contracts.push(this.contract);
-
-        const formdata = new FormData();
-        formdata.append("name", this.user.name);
-        formdata.append("idnumber", this.user.idnumber);
-        formdata.append("phone", this.user.phone);
-        formdata.append("email", this.user.email);
-        formdata.append("verfnumber", this.user.verfnumber);
-
-        formdata.append("contractnumber", this.contract.contractnumber);
-        formdata.append("bycnumber", this.contract.bycnumber);
-        formdata.append("modbuye", this.contract.modbuye);
-        formdata.append("docfile", this.contract.docfile);
-
-        await addNewCustomer(formdata);
+        // this.contract.docfile = document.querySelector(".input-file").files[0];
+        this.user._id = "123123";
+        this.user.status = true;
+        this.user.createdDate = new Date();
+        await addNewCustomer(this.user);
 
         // if execute true go call function goToUserPage();
         this.goToUserPage();
@@ -286,9 +308,12 @@ export default {
         document.querySelector(".input-file").value = null;
       } catch (err) {
         console.log(err.message);
-        console.log("customer exist..");
+        // console.log("customer exist..");
       }
     },
+  },
+  mounted() {
+    //  do nothing..
   },
 };
 </script>
